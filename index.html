@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCart - Organización de Compra Inteligente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --verde-fondo: #EAF4EA; --verde-card: #F4F9F4; --verde-fuerte: #1E5E3A; --verde-boton: #2E8B57; --naranja-accent: #FF7F50; --naranja-oscuro: #E65C00; --blanco: #FFFFFF; --gris-texto: #333333; --rojo-eliminar: #D9534F; }
+        body { margin: 0; padding: 15px; font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #F4F9F4, #EAF4EA); color: var(--gris-texto); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; box-sizing: border-box; }
+        .app-container { width: 100%; max-width: 680px; box-sizing: border-box; margin: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; width: 100%; padding: 0 10px; box-sizing: border-box; flex-wrap: wrap; gap: 15px; }
+        .logo-box { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .logo-title { font-family: 'Quicksand', sans-serif; font-size: 2.4rem; font-weight: 700; color: var(--verde-fuerte); margin: 0; transition: color 0.3s; }
+        .logo-box:hover .logo-title { color: var(--naranja-accent); }
+        
+        /* Animación del carrito corregida a un vaivén horizontal realista en línea recta sin saltos */
+        .cart-icon { font-size: 2.4rem; display: inline-block; animation: vaivenCart 3s ease-in-out infinite; }
+        @keyframes vaivenCart {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            50% { transform: translateX(5px) rotate(2deg); }
+        }
+        
+        .total-card { background: var(--blanco); padding: 12px 25px; border-radius: 20px; text-align: center; box-shadow: 0 8px 20px rgba(30,94,58,0.06); border: 2px solid var(--verde-card); min-width: 120px; transition: all 0.3s; cursor: pointer; margin-left: auto; }
+        .total-card:hover { background: var(--naranja-accent); border-color: var(--naranja-accent); box-shadow: 0 6px 15px rgba(255,127,80,0.3); }
+        .total-label { display: block; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; font-weight: 700; color: #666; margin-bottom: 2px; }
+        .total-card:hover .total-label { color: var(--blanco); }
+        .total-value { display: block; font-family: 'Quicksand', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--verde-fuerte); }
+        .total-card:hover .total-value { color: var(--blanco); }
+        .subtitle { font-family: 'Quicksand', sans-serif; font-size: 1.1rem; color: var(--verde-fuerte); margin: -15px 0 25px 12px; text-align: left; font-weight: 600; letter-spacing: 0.3px; }
+        .form-card { background: var(--blanco); padding: 25px; border-radius: 24px; margin-bottom: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
+        .form-group { margin-bottom: 16px; text-align: left; }
+        label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--verde-fuerte); margin-bottom: 8px; }
+        input, select { width: 100%; padding: 14px; border: 2px solid var(--verde-card); border-radius: 14px; font-family: 'Montserrat', sans-serif; font-size: 1rem; box-sizing: border-box; background: #FAFDFA; color: var(--gris-texto); transition: all 0.3s; }
+        input:focus, select:focus { outline: none; border-color: var(--verde-fuerte); background: var(--blanco); }
+        
+        .btn-main { width: 100%; padding: 15px; background: var(--verde-boton); color: var(--blanco); border: none; border-radius: 24px; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2); margin: 10px 0 0 0; display: inline-block; box-sizing: border-box; }
+        .btn-main:hover { background: var(--naranja-accent); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.35); transform: translateY(-1px); }
+        
+        .list-card { background: var(--blanco); padding: 25px; border-radius: 24px; box-shadow: 0 8px 25px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); }
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .list-title { font-family: 'Quicksand', sans-serif; font-size: 1.3rem; color: var(--verde-fuerte); margin: 0; font-weight: 700; transition: color 0.3s; }
+        .list-header:hover .list-title { color: var(--naranja-accent); }
+        .btn-clear { background: var(--verde-boton); border: none; color: var(--blanco); padding: 10px 18px; border-radius: 14px; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 10px rgba(46,139,87,0.15); }
+        .btn-clear:hover { background: var(--naranja-accent); color: var(--blanco); box-shadow: 0 4px 12px rgba(255, 127, 80, 0.3); }
+        .items-container { background: #FAFDFA; border: 2px dashed var(--verde-card); border-radius: 20px; padding: 20px; min-height: 80px; }
+        .empty-message { text-align: center; color: var(--naranja-oscuro); font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 1.15rem; padding: 25px 0; margin: 0; animation: pulseText 2s ease-in-out infinite; }
+        @keyframes pulseText { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); color: var(--naranja-accent); } }
+        .item-row { display: flex; justify-content: space-between; align-items: center; background: var(--blanco); padding: 14px 18px; border-radius: 16px; margin-bottom: 12px; border: 2px solid var(--verde-card); box-shadow: 0 4px 10px rgba(0,0,0,0.01); animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .item-row:last-child { margin-bottom: 0; }
+        .item-info { display: flex; align-items: center; gap: 12px; }
+        .check-icon { color: var(--verde-boton); font-weight: 700; font-size: 1.2rem; }
+        .item-details { display: flex; flex-direction: column; }
+        .item-name { font-weight: 700; font-size: 1.05rem; color: var(--gris-texto); }
+        .item-category { font-size: 0.8rem; color: #666666; font-weight: 600; margin-top: 2px; }
+        .item-right { display: flex; align-items: center; gap: 18px; }
+        .item-price { font-family: 'Quicksand', sans-serif; font-weight: 700; color: var(--verde-fuerte); font-size: 1.15rem; }
+        .btn-delete { background: none; border: none; color: var(--rojo-eliminar); font-size: 1.3rem; font-weight: 700; cursor: pointer; padding: 0 5px; transition: transform 0.2s; }
+        .btn-delete:hover { transform: scale(1.25); color: var(--naranja-oscuro); }
+        @media (max-width: 480px) {
+            header { flex-direction: column; align-items: center; text-align: center; }
+            .total-card { margin-left: auto; margin-right: auto; width: 100%; max-width: 140px; margin-top: 5px; }
+            .subtitle { text-align: center; margin-left: 0; margin-top: -10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header>
+        <div class="logo-box">
+            <span class="cart-icon">🛒</span>
+            <h1 class="logo-title">SmartCart</h1>
+        </div>
+        <div class="total-card" id="cart-total-box">
+            <span class="total-label">Total</span>
+            <span class="total-value" id="cart-total-val">$0</span>
+        </div>
+    </header>
+    <p class="subtitle">Organiza tus compras de forma inteligente</p>
+    <section class="form-card">
+        <div class="form-group">
+            <label for="input-producto">Producto</label>
+            <input type="text" id="input-producto" placeholder="Ej: Manzanas rojas">
+        </div>
+        <div class="form-group">
+            <label for="select-categoria">Categoría</label>
+            <select id="select-categoria">
+                <option value="🍏 Frutas">🍏 Frutas</option>
+                <option value="🥦 Verduras">🥦 Verduras</option>
+                <option value="🥛 Lácteos">🥛 Lácteos</option>
+                <option value="🥩 Carnes">🥩 Carnes</option>
+                <option value="🥫 Almacén">🥫 Almacén</option>
+                <option value="🥖 Panadería">🥖 Panadería</option>
+                <option value="🥤 Bebidas">🥤 Bebidas</option>
+                <option value="🧼 Limpieza">🧼 Limpieza</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="input-precio">Precio ($)</label>
+            <input type="number" id="input-precio" step="1" placeholder="0" min="0">
+        </div>
+        <div class="form-group" style="margin-top: 22px;">
+            <button class="btn-main" onclick="agregarItem()">+ Agregar Producto</button>
+        </div>
+    </section>
+    <section class="list-card">
+        <div class="list-header">
+            <h2 class="list-title">Lista de Compras</h2>
+            <button class="btn-clear" id="btn-vaciar" onclick="vaciarLista()" style="display: none;">Vaciar Lista</button>
+        </div>
+        <div class="items-container" id="contenedor-items">
+            <p class="empty-message" id="mensaje-vacio">Tu lista está vacía 🛒</p>
+        </div>
+    </section>
+</div>
+<script {nonce}>
+    let listaProductos = [];
+    function actualizarInterfaz() {
+        const contenedor = document.getElementById('contenedor-items');
+        const totalValueBox = document.getElementById('cart-total-val');
+        const btnVaciar = document.getElementById('btn-vaciar');
+        const mensajeVacio = document.getElementById('mensaje-vacio');
+        const filas = contenedor.querySelectorAll('.item-row');
+        filas.forEach(f => f.remove());
+        let acumuladoTotal = 0;
+        if (listaProductos.length === 0) {
+            mensajeVacio.style.display = 'block';
+            btnVaciar.style.display = 'none';
+        } else {
+            mensajeVacio.style.display = 'none';
+            btnVaciar.style.display = 'block';
+            listaProductos.forEach((prod, indice) => {
+                acumuladoTotal += prod.precio;
+                const itemRow = document.createElement('div');
+                itemRow.className = 'item-row';
+                itemRow.innerHTML = `
+                    <div class="item-info">
+                        <span class="check-icon">✓</span>
+                        <div class="item-details">
+                            <span class="item-name">${prod.nombre}</span>
+                            <span class="item-category">${prod.categoria}</span>
+                        </div>
+                    </div>
+                    <div class="item-right">
+                        <span class="item-price">$${prod.precio}</span>
+                        <button class="btn-delete" onclick="eliminarItem(${indice})">✕</button>
+                    </div>
+                `;
+                contenedor.appendChild(itemRow);
+            });
+        }
+        totalValueBox.innerText = `$${acumuladoTotal}`;
+    }
+    function agregarItem() {
+        const inputNombre = document.getElementById('input-producto');
+        const selectCat = document.getElementById('select-categoria');
+        const inputPrecio = document.getElementById('input-precio');
+        const nombre = inputNombre.value.trim();
+        const categoria = selectCat.value;
+        const precio = parseInt(inputPrecio.value);
+        if (!nombre || isNaN(precio) || precio < 0) {
+            alert("Por favor, ingresa un nombre válido y un precio correcto.");
+            return;
+        }
+        const nuevoProducto = { nombre: nombre, categoria: categoria, precio: precio };
+        listaProductos.push(nuevoProducto);
+        inputNombre.value = '';
+        inputPrecio.value = '';
+        inputNombre.focus();
+        actualizarInterfaz();
+    }
+    function eliminarItem(indice) {
+        listaProductos.splice(indice, 1);
+        actualizarInterfaz();
+    }
+    function vaciarLista() {
+        listaProductos = [];
+        actualizarInterfaz();
+    }
+</script>
+</body>
+</html>
+
+                  
